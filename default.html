@@ -1,0 +1,622 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Circle JS demos</title>
+    <script type="text/javascript" src="Utilities.js"></script>
+    <script type="text/javascript" src="ImageLoader.js"></script>
+    <script type="text/javascript" src="Animator.js"></script>
+    <script type="text/javascript" src="Circle.js"></script>
+    <style type="text/css">
+        *
+        {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>Javascript Circles</h1>
+    
+    <h2 id="Trigonometry">Trigonometry</h2>
+
+      <div class="trig-figure">
+        <canvas id="trig" width="520" height="120">
+        </canvas>
+        <p class="figure">Fig 1.1: The trigonometry everybody knows and loves.</p>
+        
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var trigDisplay = document.getElementById("trig");
+                var trigContext = trigDisplay.getContext('2d');
+
+                var trigDemo = new CircleJS.Demo(trigContext, trigDisplay.width, trigDisplay.height);
+                trigDemo.setFill('#00f');
+                trigDemo.setStroke('#f00');
+                trigDemo.drawTrig();
+            })();
+            //]]>
+        </script>
+      </div>
+
+      <div class="trig-figure">
+        <canvas id="multiplicationTriangles" width="520" height="120">
+        </canvas>
+
+        <p class="figure">Fig 1.2: Multiplication diagrams.</p>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var multilicationTrianglesDisplay = document.getElementById("multiplicationTriangles");
+                var multiplicationContext = multilicationTrianglesDisplay.getContext('2d');
+
+                var drawMultiplicationDiagram = function (x, sideWidth, bottomLeft, top, bottomRight) {
+                    multiplicationContext.strokeStyle = '#f00';
+                    multiplicationContext.moveTo(x, sideWidth);
+                    multiplicationContext.lineTo(x + sideWidth, sideWidth);
+                    multiplicationContext.lineTo(x + (sideWidth / 2), 0);
+                    multiplicationContext.lineTo(x, sideWidth);
+
+                    multiplicationContext.moveTo(x + (sideWidth * .25), sideWidth / 2);
+                    multiplicationContext.lineTo(x + (sideWidth * .75), sideWidth / 2);
+                    multiplicationContext.moveTo(x + (sideWidth * .5), sideWidth / 2);
+                    multiplicationContext.lineTo(x + (sideWidth * .5), sideWidth / 2 + sideWidth / 5);
+
+                    multiplicationContext.moveTo(x + (sideWidth * .5), (sideWidth / 6) * 5);
+                    multiplicationContext.lineTo(x + (sideWidth * .5), sideWidth);
+
+                    multiplicationContext.stroke();
+
+                    multiplicationContext.beginPath();
+                    multiplicationContext.fillStyle = '#f00';
+                    multiplicationContext.fillText(bottomLeft, x + (sideWidth * .2), sideWidth * .8);
+                    multiplicationContext.fillText(top, x + (sideWidth * .4), sideWidth * .4);
+                    multiplicationContext.fillText(bottomRight, x + (sideWidth * .6), sideWidth * .8);
+                    multiplicationContext.fillText("x", x + 48, sideWidth * .8);
+                    multiplicationContext.fill();
+                }
+                drawMultiplicationDiagram(0, 100, "Sinθ", "Opp", "Hyp");
+                drawMultiplicationDiagram(200, 100, "Cosθ", "Adj", "Hyp");
+                drawMultiplicationDiagram(400, 100, "Tanθ", "Opp", "Adj");
+            })()
+            //]]>
+        </script>
+      </div>
+
+      <h3>An aside: Radians</h3>
+
+      <p>Javascript trigonometry functions take the degree in radian units.  A complete circle
+       angle contains 2π radians (a value which we know as 360 degrees) meaning:</p>
+
+      <table>
+        <tbody>
+          <tr>
+            <th colspan="2">Radians to Degrees and back</th>
+          </tr>
+          <tr>
+            <td style="text-align:center !important;" colspan="2">2π radians = 360 degrees</td>
+          </tr>
+          <tr>
+            <td style="text-align:center !important;" colspan="2">
+              &#8595;
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:center !important;" colspan="2">π radians = 180 degrees (dividing both by two)</td>
+          </tr>
+          <tr>
+            <td style="text-align:center !important;" colspan="2">
+              &#8595;
+            </td>
+          </tr>
+          <tr style="text-align:center;">
+            <td>
+              <strong>1 radian = 180/π degrees</strong> (dividing both by π)
+            </td>
+            <td>
+              <strong>π/180 radians = 1 degrees</strong> (dividing both by 180)
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:center !important;" colspan="2">
+              &#8595;
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:center;">
+              <strong>myRadians * (180/π) = degrees</strong>
+            </td>
+            <td style="text-align:center;">
+              <strong>myDegrees * (π/180) = radians</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="Triangles">Triangles as part of a circle</h2>
+
+      <p>The following diagram attempts to show how useful triangles are when we are working with circles:</p>
+
+      <div class="trig-figure">
+        <canvas id="circleTriangles" style="float:left;" width="240" height="215">
+        </canvas>
+        <div style="float:left;">
+          Click to pause/play
+          <ul>
+            <li>Adj = Cosθ * Radius</li>
+            <li>Opp = Sinθ * Radius</li>
+            <li>X = Circle Centre X + Adj</li>
+            <li>Y = Circle Centre Y + Opp</li>
+          </ul>
+        </div>
+        <p class="figure" style="clear:both;">Fig 2.1: Triangles in a circle.</p>
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var circleDisplay = document.getElementById("circleTriangles");
+                var circleContext = circleDisplay.getContext('2d');
+
+                var circleTriangleDemo = new CircleJS.Demo(circleContext, circleDisplay.width, circleDisplay.height);
+                circleTriangleDemo.setFill('#00f');
+                circleTriangleDemo.setStroke('#f00');
+
+                var currentRotation = 0;
+                var circleAnimation = new Animator.Animation(60, function() {
+                    circleTriangleDemo.clear();
+                    circleTriangleDemo.drawCircleInfo(new CircleJS.Circle(100, 100, 100), currentRotation += 1);
+                    if(currentRotation >= 359)
+                    {
+                        currentRotation = currentRotation % 359;
+                    }
+                });
+                circleAnimation.start();
+
+                circleDisplay.addEventListener('click', function(e)
+                {
+                    e.preventDefault();
+                    if (circleAnimation.IsRunning())
+                    {
+                        circleAnimation.stop();
+                    }
+                    else
+                    {
+                        circleAnimation.start();
+                    }
+                });
+            })();
+            //]]>
+        </script>
+      </div>
+      
+      <h2>Using Triangles to distribute points around a circle</h2>
+
+      <p>
+        If we want 5 items we simply divide 360 by 5 to find the angle increments we require (0, 72, 144, 216, 288).  We then use these angles with Cosine and Sine
+        as above, using our chosen radius size (the hypotenuse), to find the 2D points.
+      </p>
+
+      <div class="trig-figure">
+        <canvas id="circleDistribution" style="float:left;" width="200" height="210">
+        </canvas>
+        <form style="float:left;">
+          <label>
+            Number of points:
+            <input type="text" id="circleDistributionInput" value="5" />
+          </label><br/>
+          <label for="style">
+            Style:
+            <label for="wheel">
+              <input type="radio" id="wheel" name="style" value="Wheel" checked="checked" />
+              Wheel
+            </label>
+            <label for="polygon">
+              <input type="radio" id="polygon" name="style" value="Polygon" />
+              Polygon
+            </label>
+          </label>
+        </form>
+        <p class="figure" style="clear:both;">Fig 3.1: Distributing points around a circle.</p>
+        
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var circleDistribDisplay = document.getElementById("circleDistribution");
+                var distribContext = circleDistribDisplay.getContext('2d');
+                var drawPolygon = false;
+                var distribNumberOfPoints = 5;
+                var circleDistrib = new CircleJS.Demo(distribContext, circleDistribDisplay.width, circleDistribDisplay.height);
+                circleDistrib.setFill('#00f');
+                circleDistrib.setStroke('#f00');
+
+                var drawCircleDistrib = function(numberOfPoints)
+                {
+                    circleDistrib.clear();
+                    if (drawPolygon) {
+                        circleDistrib.drawPolygon(new CircleJS.Circle(100, 100, 100), distribNumberOfPoints, 0);
+                    } else {
+                        circleDistrib.drawWheel(new CircleJS.Circle(100, 100, 100), distribNumberOfPoints, 0);
+                    }
+                };
+
+                drawCircleDistrib(distribNumberOfPoints);
+
+                var distributionInput = document.getElementById("circleDistributionInput");
+                distributionInput.addEventListener("keyup", function (e)
+                {
+                    distribNumberOfPoints = parseInt(e.target.value, 10);
+                    drawCircleDistrib();
+                });
+                var wheelStyleInput = document.getElementById("wheel");
+                wheelStyleInput.addEventListener("click", function () {
+                    drawPolygon = !wheelStyleInput.checked;
+                    drawCircleDistrib();
+                });
+                var polygonStyleInput = document.getElementById("polygon");
+                polygonStyleInput.addEventListener("click", function () {
+                    drawPolygon = polygonStyleInput.checked;
+                    drawCircleDistrib();
+                });
+            })();
+            //]]>
+        </script>
+      </div>
+
+      <h2 id="Useful" style="clear:both;">Going further</h2>
+
+      <p>With these points available to us we can draw more than just lines.  For example images:</p>
+
+      <div class="trig-figure">
+        <canvas id="imageDistribution" width="200" height="210">
+        </canvas>
+        <p class="figure" style="clear:both;">Fig 4.1: A first carousel.</p>
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var imageDistributionDisplay = document.getElementById("imageDistribution");
+                var imageDistribContext = imageDistributionDisplay.getContext('2d');
+
+                var imgDistribRotation = 0;
+                var imageDistrib = new CircleJS.Demo(imageDistribContext, imageDistributionDisplay.width, imageDistributionDisplay.height);
+                imageDistrib.setFill('#00f');
+                imageDistrib.setStroke('#f00');
+
+                var imageDistribLoader = new ImageLoader(["one.jpg", "two.jpg", "three.jpg"]);
+                imageDistribLoader.load(function(imgs) {
+                    var circle = new CircleJS.Circle(100, 100, 60, 0);
+                    var imageDistribAnimation = new Animator.Animation(33,
+                    function() {
+                        imageDistrib.clear();
+                        imageDistrib.drawWheel(circle, imgs.length, imgDistribRotation);
+                        imageDistrib.carousel(circle, imgs, imgDistribRotation);
+                        if (imgDistribRotation >= 359)
+                        {
+                            imgDistribRotation = imgDistribRotation % 359;
+                        }
+                        imgDistribRotation += 1;
+                    });
+                    imageDistribAnimation.start();
+                });
+            })();
+            //]]>
+        </script>
+      </div>
+
+      <p>
+        By adding an increasing offset to the degrees for each item we can rotate over time.
+      </p>
+
+      <h2 id="Carousel">A carousel?</h2>
+
+      <p>
+          On screen carousels have a tilt into the screen.
+      </p>
+
+      <div class="trig-figure">
+        <canvas id="tiltDemo" width="550" height="250">
+        </canvas>
+        <p class="figure" style="clear:both;">Fig 5.1: How to tilt a circle.</p>
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var tiltDemoDisplay = document.getElementById("tiltDemo");
+                var tiltDemoContext = tiltDemoDisplay.getContext('2d');
+
+                var tiltRotation = 1;
+                var tiltIncrement = 1;
+                var tiltDemo = new CircleJS.Demo(tiltDemoContext, tiltDemoDisplay.width, tiltDemoDisplay.height);
+                tiltDemo.setFill('#00f');
+                tiltDemo.setStroke('#f00');
+
+                var tiltAnimation = new Animator.Animation(60, function () {
+                    tiltDemo.clear();
+
+                    if (tiltRotation >= 89 || tiltRotation <= 0) {
+                        tiltIncrement *= -1;
+                    }
+
+                    tiltDemo.drawTiltDemo(new CircleJS.Circle(275, 200, 200, 0), (tiltRotation += tiltIncrement) % 90);
+                });
+
+                tiltDemoDisplay.addEventListener('click', function (e) {
+                    tiltIncrement = tiltIncrement == 0 ? 1 : 0;
+                });
+                tiltAnimation.start();
+            })();
+            //]]>
+        </script>
+      </div>
+
+      <p>
+        The dashed line is the screen viewed from the side with the circle of images (green line) flat upon it. We can
+        see how trigonometry can help us to calculate the adjacent length using the hypotenuse.
+        The Adj shown in the diagram is the position of the bottom most point on a circle that has its top rotated back into the screen.
+      </p>
+      <p>
+        To do this we need the varying lengths of the hypotenuse for each point in the circle.  Which happens to be the Y value we would have plotted
+        the item on screen with if there were no tilt.
+      </p>
+
+      <table>
+        <tr>
+          <th>Original 'flat' y offset from the circle centre: </th>
+          <td>yPosition = Math.sin(DegreesAroundCircle) * Radius</td>
+          <td>(Opp = Sinθ * Hyp)</td>
+        </tr>
+        <tr>
+          <th>Foreshortened y position: </th>
+          <td>AdjustedYPosition = Math.cos(DegreesTilt) * yPosition</td>
+          <td>(Adj = Cosθ * Hyp)</td>
+        </tr>
+        <tr>
+          <th>Final plot point:</th>
+          <td colspan="2">Circle.CentreY + AdjustedYPosition</td>
+        </tr>
+      </table>
+
+      <div class="trig-figure">
+        <canvas id="tiltedCircle" width="210" height="220">
+        </canvas>
+        <p class="figure" style="clear:both;">Fig 6.1: Tilted circle.</p>
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var tiltedCircleDisplay = document.getElementById("tiltedCircle");
+                var tiltedCircleContext = tiltedCircleDisplay.getContext('2d');
+
+                var currentRotation = 0;
+                var increment = 1;
+                var tiltRotation = 1;
+                var tiltIncrement = 1;
+                var tiltedCircle = new CircleJS.Demo(tiltedCircleContext, tiltedCircleDisplay.width, tiltedCircleDisplay.height);
+                tiltedCircle.setFill('#00f');
+                tiltedCircle.setStroke('#f00');
+                var tiltedCircleAnimation = new Animator.Animation(33, function()
+                {
+                    if (tiltRotation >= 89 || tiltRotation <= 0) {
+                        tiltIncrement *= -1;
+                    }
+                    tiltedCircle.clear();
+                    var tiltedCircleDefinition = new CircleJS.Circle(100, 100, 100, (tiltRotation += tiltIncrement) % 90);
+                    tiltedCircle.drawWheel(tiltedCircleDefinition, 30, 0);
+                    tiltedCircle.drawCircleInfo(tiltedCircleDefinition,  (currentRotation += increment) % 360, 0);
+                });
+                tiltedCircleAnimation.start();
+            })();
+            //]]>
+        </script>
+      </div>
+
+      <h3>Z Scaling</h3>
+      <p>
+        To give the impression of the items moving into the third dimension we scale distant items.  This can be achieved
+        by identifying the Z axis depth as a percentage of the diameter.  At 0 we use the maxmimum scale and at 1 we use
+        the minimum scale with proportions in between.
+      </p>
+
+      <h3>The tilted carousel</h3>
+
+      <div class="trig-figure">
+        <canvas id="carousel" width="400" height="300">
+        </canvas>
+        <form>
+          <label>
+            Tilt angle:
+            <input type="text" id="tilt" value="45" />
+          </label>
+        </form>
+        <p class="figure" style="clear:both;">Fig 7.1: A tilted carousel.</p>
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var carouselDisplay = document.getElementById("carousel");
+                var carouselContext = carouselDisplay.getContext('2d');
+
+                var tiltAngle = 45;
+                var carouselRotation = 0;
+                var carousel = new CircleJS.Demo(carouselContext, carouselDisplay.width, carouselDisplay.height);
+                carousel.setFill('#00f');
+                carousel.setStroke('#f00');
+
+                var carouselLoader = new ImageLoader(["one.jpg", "two.jpg", "three.jpg"]);
+                carouselLoader.load(function (imgs) {
+                    var carouselAnimation = new Animator.Animation(33,
+                    function () {
+                        var circle = new CircleJS.Circle(200, 150, 100, tiltAngle);
+                        carousel.clear();
+                        carousel.drawWheel(circle, imgs.length, carouselRotation);
+                        carousel.carousel(circle, imgs, carouselRotation);
+                        if (carouselRotation >= 359)
+                        {
+                            carouselRotation = carouselRotation % 359;
+                        }
+                        carouselRotation += 1;
+                    });
+                    carouselAnimation.start();
+                });
+
+                var tiltInput = document.getElementById("tilt");
+                tiltInput.addEventListener("keyup", function (e) {
+                    tiltAngle = parseInt(e.target.value, 10);
+                });
+            })();
+            //]]>
+        </script>
+      </div>
+
+      <h2 id="fancy">Getting fancy</h2>
+
+      <p>
+        With these basic steps in place we can begin to add adjustments to the values.  For example the below carousel displays
+        an additional y adjustment based on a Sine Wave.
+      </p>
+
+      <div class="trig-figure">
+        <canvas id="sinWaveMod" width="500" height="300">
+        </canvas>
+        <p class="figure">Fig 8.1. The final carousel</p>
+        <form>
+          <label>
+            Sine wave frquency:
+            <input type="text" id="sinFreq" value="2" />
+          </label>
+
+          <label>
+            Sine wave depth:
+            <input type="text" id="sinDepth" value="50" />
+          </label>
+          <label>
+            Show wave:
+            <input type="checkbox" id="showWave" />
+          </label>
+
+        </form>
+
+        <script type="text/javascript">
+            //<![CDATA[
+            (function(){
+                var sinWaveModDisplay = document.getElementById("sinWaveMod");
+                var sinWaveModContext = sinWaveModDisplay.getContext('2d');
+
+                var sinWaveDepth = 50;
+                var sinFreq = 2;
+                var showWave = false;
+                var sinWavCarouselRotation = 0;
+                var sinWaveModDemo = new CircleJS.Demo(sinWaveModContext, sinWaveModDisplay.width, sinWaveModDisplay.height);
+                sinWaveModDemo.setFill('#00f');
+                sinWaveModDemo.setStroke('#f00');
+
+                var sinWaveCarouselLoader = new ImageLoader(["one.jpg", "two.jpg", "three.jpg", "one.jpg", "two.jpg", "three.jpg", "one.jpg", "two.jpg"]);
+                sinWaveCarouselLoader.load(function (imgs) {
+                    var sinWaveCarouselAnimation = new Animator.Animation(33,
+                    function () {
+                        var circle = new CircleJS.Circle(250, 150, 200, 95);
+                        sinWaveModDemo.clear();
+                        var sinWave = function(degrees) {
+                            return Math.sin(degrees.toRad() * sinFreq) * sinWaveDepth;
+                        };
+                        if (showWave)
+                        {
+                            sinWaveModDemo.drawCircle(circle, 180, 0, sinWave);
+                        }
+                        var sinWaveWheelCircle = new CircleJS.Circle(circle.centreX, circle.centreY + 100, circle.radius, circle.rotationAboutX);
+                        sinWaveModDemo.setStroke("#5E2612");
+                        sinWaveModDemo.drawWheel(sinWaveWheelCircle, 360, 0);
+                        sinWaveModContext.beginPath();
+                        sinWaveModContext.moveTo(circle.centreX, circle.centreY + 100);
+                        sinWaveModContext.lineTo(circle.centreX, circle.centreY - 100);
+                        sinWaveModContext.stroke();
+
+                        sinWaveModDemo.carousel(circle, imgs, sinWavCarouselRotation, sinWave);
+
+                        if (sinWavCarouselRotation >= 359)
+                        {
+                            sinWavCarouselRotation = sinWavCarouselRotation % 359;
+                        }
+                        sinWavCarouselRotation += 1;
+                    });
+                    sinWaveCarouselAnimation.start();
+                });
+
+                var sinFreqInput = document.getElementById("sinFreq");
+                sinFreqInput.addEventListener("keyup", function(e) {
+                    sinFreq = parseInt(e.target.value, 10);
+                });
+                var sinDepthInput = document.getElementById("sinDepth");
+                sinDepthInput.addEventListener("keyup", function(e) {
+                    sinWaveDepth = parseInt(e.target.value, 10);
+                });
+                var showWaveInput = document.getElementById("showWave");
+                showWaveInput.addEventListener("click", function(e) {
+                    showWave = e.target.checked;
+                });
+            })();
+            //]]>
+        </script>
+      </div>
+
+      <h2 id="sinewave">N.B. Sine Wave</h2>
+
+      <p>
+        A Sine wave is a regular up and down wave form that can be mathematically calculated using the sine of an ever increasing angle.
+      </p>
+
+      <div class="trig-figure">
+        <canvas id="sinWaveDemo" width="500" height="120">
+        </canvas>
+        <p class="figure" style="clear:both;">Fig 9.1: A sine wave explained.</p>
+        <script type="text/javascript">
+            //<![CDATA[
+            var sinWavePoints = [];
+            var sinWaveDisplay = document.getElementById("sinWaveDemo");
+            var sinWaveContext = sinWaveDisplay.getContext('2d');
+
+            var sinWaveDemo = new CircleJS.Demo(
+            sinWaveContext,
+            sinWaveDisplay.width,
+            sinWaveDisplay.height);
+
+            sinWaveDemo.setFill('#00f');
+            sinWaveDemo.setStroke('#f00');
+
+            var sinWaveDemoRotation = 0;
+            var sinWaveCircle = new CircleJS.Circle(60, 55, 50, 0);
+            var offset = 0;
+
+            var sinWaveDemoAnimator = new Animator.Animation(33, function() {
+                sinWaveDemo.clear();
+                sinWaveDemo.drawCircleInfo(sinWaveCircle, sinWaveDemoRotation);
+
+                var opp = Math.sin(sinWaveDemo.adjustDegrees(sinWaveDemoRotation).toRad()) * sinWaveCircle.radius;
+                sinWavePoints.push(new CircleJS.Point(sinWaveCircle.centreX + sinWaveDemoRotation, sinWaveCircle.centreY + opp));
+                for(p in sinWavePoints)
+                {
+                    sinWaveDemo.drawPoint(sinWaveCircle, new CircleJS.Point(sinWavePoints[p].x - offset, sinWavePoints[p].y));
+                }
+                sinWaveDemoRotation += 1;
+                if(sinWavePoints.length > 360)
+                {
+                    offset += 1;
+                    sinWavePoints.shift();
+                }
+
+                // Lets avoid making too huge an array
+                if(sinWaveDemoRotation > 5000)
+                {
+                    sinWaveDemoRotation = 0
+                    sinWavePoints = [];
+                    offset = 0;
+                }
+            });
+            sinWaveDemoAnimator.start();
+
+            sinWaveDisplay.addEventListener("click", function () {
+                sinWaveDemoRotation = 0
+                sinWavePoints = [];
+                offset = 0;
+            });
+            //]]>
+        </script>
+      </div>
+</body>
+</html>
