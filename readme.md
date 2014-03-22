@@ -3,6 +3,8 @@ CircleJS
 
 A collection of javascript classes that can be used to demonstrate simple trigonometry and circle maths.
 
+To see the demos in action simply pull the repository and open default.html in a browser that supports html canvas.  This page is a cut down version of the blog post that this library is based on.
+
 Files
 -----
 
